@@ -29,9 +29,7 @@ const roomTypeSchema = new mongoose.Schema({
     availableRooms:{
         type:Number
     },
-    prices:[{
-        price:priceSchema
-    }],
+    prices:[priceSchema],
     gallery:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Gallery'
@@ -47,10 +45,14 @@ const roomTypeSchema = new mongoose.Schema({
     view:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'View'
-    }
+    },
+    guests:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Guest'
+    }]
 })
 
-const RoomType = mongoose.model('"RoomType',roomTypeSchema);
+const RoomType = mongoose.model('RoomType',roomTypeSchema);
 
 function validatePrice(price){
     const schema = Joi.object({
@@ -89,18 +91,8 @@ function validateRoomType(roomType){
             "any.required": `Name is a required field`,
             "string.empty":`Name should not be empty`,
             "string.base":`Invalid Name`
-        }),
-        availableRooms:Joi.number().required().int().min(0).messages({
-            "any.reqired":`Value  is a required field`,
-            "number.base":`Value  should an integer number`,
-            "number.min":`Value  should be positive`  
-        }),
-        prices: Joi.array().min(1).items(priceSchema).messages({
-            'array.base': 'Please insert vali prices',
-            'array.min': 'It must be at least one price',
-            'string.empty': 'Price cannot be empty',
-          }),
-    })
+        })
+    }).unknown(true)
     return schema.validate(roomType)
 }
 

@@ -29,5 +29,5 @@ module.exports = function (app) {
   app.use("/api/services",services);
   app.use("/api/views",views);
   app.use("/api/guests",guests);
-  app.use("/api/roomtype",roomTypes);
+  app.use("/api/roomtypes",roomTypes);
 }
