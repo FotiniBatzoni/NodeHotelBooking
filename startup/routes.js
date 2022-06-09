@@ -2,7 +2,8 @@ const express = require("express");
 const descriptions = require("../routes/admin/descriptions");
 const services = require("../routes/admin/services");
 const views = require("../routes/admin/views");
-const guests = require("../routes/admin/guests")
+const guests = require("../routes/admin/guests");
+const roomTypes = require("../routes/admin/roomTypes")
 
 
 //to handle res.header
@@ -27,5 +28,6 @@ module.exports = function (app) {
   app.use("/api/descriptions",descriptions);
   app.use("/api/services",services);
   app.use("/api/views",views);
-  app.use("/api/guests",guests)
+  app.use("/api/guests",guests);
+  app.use("/api/roomtype",roomTypes);
 }

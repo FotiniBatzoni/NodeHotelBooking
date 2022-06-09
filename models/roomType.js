@@ -22,7 +22,7 @@ const roomTypeSchema = new mongoose.Schema({
     name:{
         type:String
     },
-    totalRooms:[{
+    rooms:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room'
     }],
@@ -33,7 +33,8 @@ const roomTypeSchema = new mongoose.Schema({
         price:priceSchema
     }],
     gallery:[{
-        type:String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Gallery'
     }],
     description:[{
         type: mongoose.Schema.Types.ObjectId,
