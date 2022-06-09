@@ -3,7 +3,8 @@ const descriptions = require("../routes/admin/descriptions");
 const services = require("../routes/admin/services");
 const views = require("../routes/admin/views");
 const guests = require("../routes/admin/guests");
-const roomTypes = require("../routes/admin/roomTypes")
+const roomTypes = require("../routes/admin/roomTypes");
+const rooms = require("../routes/admin/rooms");
 
 
 //to handle res.header
@@ -30,4 +31,5 @@ module.exports = function (app) {
   app.use("/api/views",views);
   app.use("/api/guests",guests);
   app.use("/api/roomtypes",roomTypes);
+  app.use("/api/rooms",rooms)
 }
