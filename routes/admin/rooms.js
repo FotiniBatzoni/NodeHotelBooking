@@ -43,4 +43,79 @@ router.post("/",async(req,res)=>{
     return res.send({message:"Room is successfully saved"})
 })
 
+router.put("/:roomId",async(req,res)=>{
+    const {roomId}= req.params;
+
+    if(!mongoose.isValidObjectId(roomId)){
+        return res.status(404).send({message:"Invalid Room"})
+    }
+
+    const {error} =validateRoom(req.body);
+    if(error){
+        return res.status(400).send({message:error.details[0].message})
+    }
+
+    
+    const room = await Room.findByIdAndUpdate(roomId,req.body,{new:true});
+
+    if(!room){
+        return res.status(404).send({message:"Room has not been found"})
+    }
+
+    return res.send({message:"Room has been successfully updated"})
+})
+
+router.get("/",async(req,res)=>{
+    const roomQuery = Room.find({})
+        .populate({ path:'roomType', select:'name'})
+        .populate({ path:'damages',select:'name'})
+
+    const roomCount = await Room.countDocuments()
+
+    const url = `${req.protocol}://${req.get('host')}/api/rooms`;
+
+    const rooms = await paginateDocuments(req.query,roomQuery,roomCount,url);
+
+    return res.send(rooms)
+
+})
+
+router.get("/:roomId",async(req,res)=>{
+    const {roomId}= req.params;
+
+    if(!mongoose.isValidObjectId(roomId)){
+        return res.status(404).send({message:"Invalid Room"})
+    }
+
+    const room =await  Room.findOne({_id:roomId})
+    .populate({ path:'roomType', select:'name'})
+    .populate({ path:'damages',select:'name'})
+
+    return res.send(room)
+})
+
+
+router.delete("/:roomId",async(req,res)=>{
+    const {roomId}= req.params;
+
+    if(!mongoose.isValidObjectId(roomId)){
+        return res.status(404).send({message:"Invalid Room"})
+    }
+
+    const room = await Room.findByIdAndDelete(roomId);
+
+    if(!room){
+        return res.status(404).send({message:"Room has not been found"})
+    }
+
+    //find roomtype and delete room
+    await RoomType.findOneAndUpdate(
+        {_id:room.roomType},
+        { $pull:{rooms:roomId}},
+        {new:true}
+     )
+
+    return res.send({message:"Room has been successfully deleted"})
+})
+
 module.exports = router
