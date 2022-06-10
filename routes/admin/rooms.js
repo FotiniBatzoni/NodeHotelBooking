@@ -55,11 +55,20 @@ router.put("/:roomId",async(req,res)=>{
         return res.status(400).send({message:error.details[0].message})
     }
 
+    const roomBeforeUpdate = await Room.findOne({_id:roomId});
+
+    if(!roomBeforeUpdate){
+        return res.status(404).send({message:"Room has not been found"})
+    }
+
+    const roomTypeBeforeUpdate = roomBeforeUpdate.roomType;
     
+   
     const room = await Room.findByIdAndUpdate(roomId,req.body,{new:true});
 
-    if(!room){
-        return res.status(404).send({message:"Room has not been found"})
+    if(roomTypeBeforeUpdate!==req.body.roomType){
+        await RoomType.findByIdAndUpdate(roomTypeBeforeUpdate._id, {$pull: {rooms:roomBeforeUpdate._id}})
+        await RoomType.findByIdAndUpdate(room.roomType, {$push: {rooms:room._id}})
     }
 
     return res.send({message:"Room has been successfully updated"})
