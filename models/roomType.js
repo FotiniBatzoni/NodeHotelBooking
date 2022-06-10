@@ -40,7 +40,7 @@ const roomTypeSchema = new mongoose.Schema({
     }],
     services:[{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Services'
+        ref:'Service'
     }],
     view:{
         type: mongoose.Schema.Types.ObjectId,

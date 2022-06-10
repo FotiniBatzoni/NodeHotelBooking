@@ -69,6 +69,10 @@ router.post("/",async(req,res)=>{
 router.put("/:roomTypeId",async(req,res)=>{
     const {roomTypeId} = req.params;
 
+    if(!mongoose.isValidObjectId(roomTypeId)){
+        return res.status(404).send({message:"Invalid Room Type"})
+    }
+
     const {error}= validateRoomType(req.body)
     if(error){
         return res.status(400).send({message:`${error.details[0].message} `})
@@ -124,5 +128,61 @@ router.put("/:roomTypeId",async(req,res)=>{
 
     return res.send({message:"Room Type is successfully updated"})
 })
+
+router.get("/",async(req,res)=>{
+    const roomTypeQuery = RoomType.find({})
+      .populate({ path :'rooms', select:'roomNumber floor isAvailable isOutOfOrder'})
+      .populate({ path:'description', select:'name thumbnail'})
+      .populate({ path:'services', select:'name'})
+      .populate({ path:'view', select:'name'})
+      .populate({ path:'guests', select:'name  guests thumbnail'})
+
+      const roomTypeCount = await RoomType.countDocuments({})
+
+      const url = `${req.protocol}://${req.get('host')}/api/roomtypes`
+
+      const roomTypes = await paginateDocuments(req.query,roomTypeQuery,roomTypeCount,url);
+
+      return res.send(roomTypes)
+})
+
+router.get("/:roomTypeId",async(req,res)=>{
+    const {roomTypeId}=req.params;
+
+    if(!mongoose.isValidObjectId(roomTypeId)){
+        return res.status(404).send({message:"Invalid Room Type"})
+    }
+
+    const roomType = await RoomType.findOne({_id:roomTypeId})
+        .populate({ path :'rooms', select:'roomNumber floor isAvailable isOutOfOrder'})
+        .populate({ path:'description', select:'name thumbnail'})
+        .populate({ path:'services', select:'name'})
+        .populate({ path:'view', select:'name'})
+        .populate({ path:'guests', select:'name  guests thumbnail'})
+        
+    if(!roomType){
+        return res.status(404).send({message:"Room Type has not been found"})
+    }
+
+    return res.send(roomType)
+
+})
+
+router.delete("/:roomTypeId",async(req,res)=>{
+    const {roomTypeId}= req.params;
+
+    if(!mongoose.isValidObjectId(roomTypeId)){
+        return res.status(404).send({message:"Invalid Room Type"})
+    }
+
+    const roomType = await RoomType.findByIdAndDelete(roomTypeId);
+
+    if(!roomType){
+        return res.status(404).send({message:"Room Type has not been found"})
+    }
+
+    return res.send({message:"Room Type has been successfully deleted"})
+})
+
 
 module.exports=router;

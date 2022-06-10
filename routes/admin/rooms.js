@@ -100,6 +100,10 @@ router.get("/:roomId",async(req,res)=>{
     .populate({ path:'roomType', select:'name'})
     .populate({ path:'damages',select:'name'})
 
+    if(!room){
+        return res.status(404).send({message:"Room has not been found"})
+    }
+
     return res.send(room)
 })
 
