@@ -91,6 +91,21 @@ function validateRoomType(roomType){
             "any.required": `Name is a required field`,
             "string.empty":`Name should not be empty`,
             "string.base":`Invalid Name`
+        }),
+        description:Joi.array().items(Joi.objectId()).unique().messages({
+            "array.unique":`Description contain duplicated value`,
+            "string.empty":`Description should not be empty`,
+            "string.pattern.name":`Invalid one of description`
+        }),
+        services:Joi.array().items(Joi.objectId()).unique().messages({
+            "array.unique":`Services contain duplicated value`,
+            "string.empty":`Services should not be empty`,
+            "string.pattern.name":`Invalid one of services`
+        }),
+        guests:Joi.array().items(Joi.objectId()).unique().messages({
+            "array.unique":`Guests contain duplicated value`,
+            "string.empty":`Guests should not be empty`,
+            "string.pattern.name":`Invalid one of guests`
         })
     }).unknown(true)
     return schema.validate(roomType)
